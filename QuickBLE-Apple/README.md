@@ -1,0 +1,1 @@
+iOS_macOS project contains all code and builds a swift framework. Works for Unity iOS but not Unity macOS. Unity macOS needs bundle with C bindings built in so macOS_Unity builds bundle.

@@ -1,0 +1,56 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+	buildToolsVersion "28.0.2"
+	defaultConfig {
+		compileSdkVersion 28
+		minSdkVersion 18
+		targetSdkVersion 28
+		versionCode 14
+		versionName "1.2.8"
+	}
+	buildTypes {
+		release {
+			minifyEnabled false
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+		}
+	}
+	lintOptions {
+		abortOnError false
+	}
+}
+
+dependencies {
+	implementation 'com.android.support:support-annotations:24.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+configurations {
+	customConfig.extendsFrom implementation
+}
+
+// Make dependencies accessible
+task copyLibs(type: Copy) {
+	from configurations.customConfig
+	into 'release/dependencies'
+}
+//task to delete the old aar
+task deleteOld(type: Delete) {
+	delete 'release/QuickBLE.aar'
+	delete 'release/dependencies'
+}
+//task to export contents as aar
+task exportAar(type: Copy) {
+	from('build/outputs/aar/')
+	into('release/')
+	include('app-release.aar')
+	///Rename the aar
+	rename('app-release.aar', 'QuickBLE.aar')
+}
+copyLibs.dependsOn(deleteOld)
+exportAar.dependsOn(deleteOld, build, copyLibs)
+
+repositories {
+    mavenCentral()
+}
